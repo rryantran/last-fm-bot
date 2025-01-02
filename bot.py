@@ -21,6 +21,7 @@ async def load_cogs():
     """Loads all cogs"""
 
     await bot.load_extension("commands.oauth")
+    await bot.load_extension("commands.playlist")
 
 
 @bot.event
