@@ -1,5 +1,12 @@
+import os
 from discord import Embed, Color
 from discord.ext import commands
+from dotenv import load_dotenv
+
+# Load environment variables
+load_dotenv()
+
+FLASK_URL = os.getenv("FLASK_URL")
 
 
 class OAuth(commands.Cog):
@@ -7,7 +14,7 @@ class OAuth(commands.Cog):
 
     def __init__(self, bot):
         self.bot = bot
-        self.flask_url = "http://127.0.0.1:3000/login"
+        self.flask_url = f"{FLASK_URL}/login"
 
     @commands.command(name="connect")
     async def connect(self, ctx):
