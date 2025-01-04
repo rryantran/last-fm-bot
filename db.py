@@ -14,7 +14,8 @@ collection = db['user']
 
 
 def create_user(discord_id, lastfm_user, access_token, refresh_token):
-    """Create a new user in the database"""
+    """Creates a new user in the database"""
+
     user = {
         "discord_id": discord_id,
         "lastfm_user": lastfm_user,
@@ -23,3 +24,14 @@ def create_user(discord_id, lastfm_user, access_token, refresh_token):
     }
 
     collection.insert_one(user)
+
+
+def get_access_token(discord_id):
+    """Gets the access token for a user"""
+
+    try:
+        user = collection.find_one({"discord_id": discord_id})
+
+        return user.get("access_token")
+    except:
+        return ""

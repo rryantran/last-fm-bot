@@ -3,6 +3,7 @@ import requests
 from spotipy.oauth2 import SpotifyOAuth
 from dotenv import load_dotenv
 from flask import Flask, redirect, request, render_template, url_for, session
+from db import create_user, get_access_token
 
 # Load environment variables
 load_dotenv()
@@ -23,15 +24,14 @@ spotify_oauth = SpotifyOAuth(
     scope="user-top-read",
 )
 
-# In-memory storage for tokens (development only)
-user_tokens = {}
-
 
 @app.route("/login")
 def login():
     """Redirects user to Spotify login page"""
 
+    # Store Discord user ID and Last.fm username in session
     session["user_id"] = request.args.get("user_id")
+    session["lastfm_user"] = request.args.get("lastfm_user")
 
     return redirect(spotify_oauth.get_authorize_url())
 
@@ -63,10 +63,9 @@ def callback():
     refresh_token = token_info.get("refresh_token")
 
     user_id = session.get("user_id")
-    user_tokens[user_id] = {
-        "access_token": access_token,
-        "refresh_token": refresh_token,
-    }
+    lastfm_user = session.get("lastfm_user")
+
+    create_user(user_id, lastfm_user, access_token, refresh_token)
 
     return redirect(url_for('connected'))
 
@@ -74,12 +73,8 @@ def callback():
 @app.route("/access/<user_id>")
 def access_token(user_id):
     """Returns the access token for the user or an empty string if no token is found"""
-    try:
-        token = user_tokens.get(user_id).get("access_token")
 
-        return token
-    except:
-        return ""
+    return get_access_token(user_id)
 
 
 # Run Flask app on port 3000
