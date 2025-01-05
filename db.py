@@ -26,6 +26,17 @@ def create_user(discord_id, lastfm_user, access_token, refresh_token):
     collection.insert_one(user)
 
 
+def get_lastfm_user(discord_id):
+    """Gets the Last.fm username for a user"""
+
+    try:
+        user = collection.find_one({"discord_id": discord_id})
+
+        return user.get("lastfm_user")
+    except:
+        return None
+
+
 def get_access_token(discord_id):
     """Gets the access token for a user"""
 
