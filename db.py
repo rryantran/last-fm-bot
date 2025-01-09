@@ -13,21 +13,25 @@ db = client['users']
 collection = db['user']
 
 
-def create_user(discord_id, lastfm_user, access_token, refresh_token):
+def create_user(discord_id, lastfm_user, token_info):
     """Creates a new user in the database"""
+
+    existing_user = collection.find_one({"discord_id": discord_id})
+
+    if existing_user:
+        return
 
     user = {
         "discord_id": discord_id,
         "lastfm_user": lastfm_user,
-        "access_token": access_token,
-        "refresh_token": refresh_token
+        "token_info": token_info,
     }
 
     collection.insert_one(user)
 
 
 def get_lastfm_user(discord_id):
-    """Gets the Last.fm username for a user"""
+    """Gets the Last.fm username for a user if it exists"""
 
     try:
         user = collection.find_one({"discord_id": discord_id})
@@ -37,12 +41,12 @@ def get_lastfm_user(discord_id):
         return None
 
 
-def get_access_token(discord_id):
-    """Gets the access token for a user"""
+def get_token_info(discord_id):
+    """Gets token information for a user if it exists"""
 
     try:
         user = collection.find_one({"discord_id": discord_id})
 
-        return user.get("access_token")
+        return user.get("token_info")
     except:
-        return ""
+        return None
