@@ -39,7 +39,7 @@ class OAuth(commands.Cog):
         if isinstance(error, commands.MissingRequiredArgument):
             embed = Embed(
                 title="Error: Missing argument",
-                description="Please provide your Last.fm username: `!connect <lastfm_user>`",
+                description="Please provide your Last.fm username: `!connect <username>`",
                 color=Color.red())
 
             await ctx.send(embed=embed)
