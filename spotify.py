@@ -1,8 +1,9 @@
 import os
-from spotipy.oauth2 import SpotifyOAuth
+from spotipy import Spotify
+from spotipy.oauth2 import SpotifyOAuth, SpotifyClientCredentials
 from dotenv import load_dotenv
 from flask import Flask, redirect, request, render_template, url_for, session
-from db import create_user
+from db import create_user, get_access_token
 
 # Load environment variables
 load_dotenv()
@@ -15,6 +16,14 @@ REDIRECT_URI = os.getenv("REDIRECT_URI")
 app = Flask(__name__)
 app.secret_key = os.getenv("FLASK_SECRET_KEY")
 
+# Set up Spotify client with client credentials flow
+spotify_cc = Spotify(
+    auth_manager=SpotifyClientCredentials(
+        client_id=SPOTIFY_CLIENT_ID,
+        client_secret=SPOTIFY_CLIENT_SECRET,
+    )
+)
+
 # Set up Spotify OAuth
 spotify_oauth = SpotifyOAuth(
     client_id=SPOTIFY_CLIENT_ID,
@@ -22,6 +31,14 @@ spotify_oauth = SpotifyOAuth(
     redirect_uri=REDIRECT_URI,
     scope="playlist-modify-public",
 )
+
+
+def spotify_uc(user_id):
+    """Returns a Spotify client with user credentials flow"""
+
+    access_token = get_access_token(user_id)
+
+    return Spotify(auth=access_token)
 
 
 @app.route("/login")

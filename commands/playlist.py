@@ -9,7 +9,7 @@ from dotenv import load_dotenv
 sys.path.append(os.path.join(os.path.dirname(__file__), ".."))
 
 from db import get_lastfm_user
-from spotify_client import spotify, spotify_client
+from spotify import spotify_cc, spotify_uc
 
 # Load environment variables
 load_dotenv()
@@ -28,7 +28,7 @@ class Playlist(commands.Cog):
 
     def get_spotify_uri(self, track, artist):
         query = f"{track} {artist}"
-        response = spotify.search(q=query, limit=1)
+        response = spotify_cc.search(q=query, limit=1)
         items = response["tracks"]["items"]
 
         if items:
@@ -40,7 +40,7 @@ class Playlist(commands.Cog):
 
         discord_user = str(ctx.author.id)
         lastfm_user = get_lastfm_user(discord_user)
-        sp = spotify_client(discord_user)
+        sp = spotify_uc(discord_user)
         sp_user = sp.current_user()
 
         # Map the time range to the Last.fm API period
