@@ -1,5 +1,3 @@
-from spotify import spotify_cc, spotify_uc
-from db import get_lastfm_user
 import os
 import sys
 import requests
@@ -10,6 +8,8 @@ from dotenv import load_dotenv
 # Add the parent directory to the sys.path for db and spotify import
 sys.path.append(os.path.join(os.path.dirname(__file__), ".."))
 
+from spotify import spotify_cc, spotify_uc
+from db import get_lastfm_user
 
 # Load environment variables
 load_dotenv()

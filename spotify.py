@@ -34,7 +34,7 @@ spotify_oauth = SpotifyOAuth(
 
 
 def spotify_uc(discord_id):
-    """Returns a Spotify client with user credentials flow"""
+    """Returns a Spotify client with user credentials flow (used for playlist permissions)"""
 
     token_info = get_token_info(discord_id)
     access_token = token_info.get("access_token")
@@ -72,11 +72,13 @@ def callback():
     """Handles callback from Spotify OAuth"""
 
     code = request.args.get("code")
-    token_info = spotify_oauth.get_access_token(code)
 
-    access_token = token_info.get("access_token")
-    expires_at = token_info.get("expires_at")
-    refresh_token = token_info.get("refresh_token")
+    # Get token info from cache
+    token_info = spotify_oauth.get_cached_token()
+
+    # Get new token info if not cached
+    if not token_info:
+        token_info = spotify_oauth.get_access_token(code)
 
     discord_id = session.get("discord_id")
     lastfm_user = session.get("lastfm_user")

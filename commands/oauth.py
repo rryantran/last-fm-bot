@@ -1,7 +1,13 @@
 import os
+import sys
 from discord import Embed, Color
 from discord.ext import commands
 from dotenv import load_dotenv
+
+# Add the parent directory to the sys.path for db import
+sys.path.append(os.path.join(os.path.dirname(__file__), ".."))
+
+from db import get_lastfm_user
 
 # Load environment variables
 load_dotenv()
@@ -21,8 +27,19 @@ class OAuth(commands.Cog):
         """Connects a user's Spotify and Last.fm account to the bot"""
 
         discord_user = str(ctx.author.id)
+        lastfm_user = get_lastfm_user(discord_user)
         auth_url = f"{self.flask_url}?user_id={
             discord_user}&lastfm_user={lastfm_user}"
+
+        # Check if user is already connected
+        if lastfm_user:
+            embed = Embed(
+                title="Error: Already Connected",
+                description="You have already connected your Last.fm account",
+                color=Color.red())
+
+            await ctx.send(embed=embed)
+            return
 
         embed = Embed(
             title="Connect your Spotify account",
